@@ -1,0 +1,7 @@
+{
+  "start_timeout": 180,
+  "friendly_error_pages": false,
+  "min_instances": 1,
+  "pool_idle_time": 0,
+  "max_pool_size": 1
+}

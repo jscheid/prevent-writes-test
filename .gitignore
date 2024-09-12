@@ -1,0 +1,11 @@
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+/tmp/pids/*
+!/tmp/pids
+!/tmp/pids/.keep
+/storage/*
+!/storage/.keep
+/.bundle
+/vendor/bundle

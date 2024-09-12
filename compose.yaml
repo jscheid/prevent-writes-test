@@ -1,0 +1,54 @@
+services:
+  web:
+    build:
+      context: ./
+    command: bash -c "rm -f tmp/pids/server.pid && bin/rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - .:/usr/src/app
+      - bundle:/usr/local/bundle
+    ports:
+      - "9001:3000"
+    env_file:
+      - .env
+    environment:
+      HISTFILE: /usr/src/app/log/.bash_history
+      PASSENGER_DOWNLOAD_NATIVE_SUPPORT_BINARY: 0
+      PASSENGER_COMPILE_NATIVE_SUPPORT_BINARY: 0
+      PASSENGER_DISABLE_SECURITY_UPDATE_CHECK: true
+      PASSENGER_DISABLE_LOG_PREFIX: true
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: curl --fail http://localhost:3000/up || exit 1
+      start_period: 2s
+
+  db:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: pg_isready -U postgres
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  test:
+    image: curlimages/curl
+    volumes:
+      - ./test.bash:/test.bash
+    depends_on:
+      web:
+        condition: service_healthy
+    entrypoint: "/bin/sh"
+    command: ["/test.bash"]
+
+volumes:
+  pg_data:
+  bundle:

@@ -1,0 +1,15 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: 1
+  host: db
+  username: postgres
+  password: postgres
+  database: postgres
+
+development:
+  primary:
+    <<: *default
+  primary_replica:
+    <<: *default
+    replica: true
